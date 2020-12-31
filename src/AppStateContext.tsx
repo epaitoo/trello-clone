@@ -60,6 +60,39 @@ const appData: AppState = {
   ],
 };
 
+// Actions
+
+type Action =
+  | {
+      type: "ADD_LIST";
+      payload: string;
+    }
+  | {
+      type: "ADD_TASK";
+      payload: { text: string; listId: string };
+    };
+
+// Defien appStateReducer
+const appStateReducer = (state: AppState, action: Action): AppState => {
+    switch (action.type) {
+      case "ADD_LIST":
+        // Reducer Logic here
+        return {
+          ...state
+        }
+      case "ADD_TASK":
+        // Reducer Logic here
+        return {
+          ...state
+        }
+    
+      default: {
+        return state
+      }
+        
+    }
+} 
+
 export const AppStateProvider = ({ children }: React.PropsWithChildren<{}>) => {
   return (
     <AppStateContext.Provider value={{ state: appData }}>
