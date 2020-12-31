@@ -1,4 +1,6 @@
 import React, { createContext, useReducer, useContext } from "react";
+import { nanoid } from "nanoid";
+import { findItemIndexById, overrideItemAtIndex } from "./utils/arrayUtils";
 
 // Define the AppStateContext
 const AppStateContext = createContext<AppStateContextProps>(
@@ -7,6 +9,7 @@ const AppStateContext = createContext<AppStateContextProps>(
 
 interface AppStateContextProps {
   state: AppState;
+  dispatch: React.Dispatch<Action>;
 }
 
 // Define the AppState Type
@@ -72,30 +75,60 @@ type Action =
       payload: { text: string; listId: string };
     };
 
-// Defien appStateReducer
+// Define appStateReducer
 const appStateReducer = (state: AppState, action: Action): AppState => {
-    switch (action.type) {
-      case "ADD_LIST":
-        // Reducer Logic here
-        return {
-          ...state
-        }
-      case "ADD_TASK":
-        // Reducer Logic here
-        return {
-          ...state
-        }
-    
-      default: {
-        return state
-      }
-        
+  switch (action.type) {
+    case "ADD_LIST":
+      // Reducer Logic here
+      return {
+        // use spread operator to get the previous state
+        ...state,
+        // set list to new array with list from old state plus new item
+        lists: [
+          ...state.lists,
+          { id: nanoid(), text: action.payload, tasks: [] },
+        ],
+      };
+    case "ADD_TASK": {
+      // Reducer Logic here
+
+      // Get index of the list
+      const targetListIndex = findItemIndexById(
+        state.lists,
+        action.payload.listId
+      );
+
+      const targetList = state.lists[targetListIndex];
+
+      const updatedTargetList = {
+        ...targetList,
+        tasks: [
+          ...targetList.tasks,
+          { id: nanoid(), text: action.payload.text },
+        ],
+      };
+
+      return {
+        ...state,
+        lists: overrideItemAtIndex(
+          state.lists,
+          updatedTargetList,
+          targetListIndex
+        ),
+      };
     }
-} 
+
+    default: {
+      return state;
+    }
+  }
+};
 
 export const AppStateProvider = ({ children }: React.PropsWithChildren<{}>) => {
+  const [state, dispatch] = useReducer(appStateReducer, appData);
+
   return (
-    <AppStateContext.Provider value={{ state: appData }}>
+    <AppStateContext.Provider value={{ state, dispatch }}>
       {children}
     </AppStateContext.Provider>
   );

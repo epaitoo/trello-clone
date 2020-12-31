@@ -8,20 +8,25 @@ import { useAppState } from "../AppStateContext";
 interface ColumnProps {
   text: string;
   index: number;
+  id: string;
 }
 
-const { state } = useAppState();
+export const Column = ({ text, index, id }: ColumnProps) => {
+  const { state, dispatch } = useAppState();
 
-export const Column = ({ text, index }: ColumnProps) => (
-  <ColumnContainer>
-    <ColumnTitle>{text}</ColumnTitle>
-    {state.lists[index].tasks.map((task) => (
-      <Card text={task.text} key={task.id} />
-    ))}
-    <AddNewItem
-      toggleButtonText="+ Add another Task"
-      onAdd={console.log}
-      dark
-    />
-  </ColumnContainer>
-);
+  return (
+    <ColumnContainer>
+      <ColumnTitle>{text}</ColumnTitle>
+      {state.lists[index].tasks.map((task) => (
+        <Card text={task.text} key={task.id} />
+      ))}
+      <AddNewItem
+        toggleButtonText="+ Add another Task"
+        onAdd={(text) =>
+          dispatch({ type: "ADD_TASK", payload: { text, listId: id } })
+        }
+        dark
+      />
+    </ColumnContainer>
+  );
+};
