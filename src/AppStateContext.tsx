@@ -1,6 +1,10 @@
 import React, { createContext, useReducer, useContext } from "react";
 import { nanoid } from "nanoid";
-import { findItemIndexById, overrideItemAtIndex } from "./utils/arrayUtils";
+import {
+  findItemIndexById,
+  overrideItemAtIndex,
+  moveItem,
+} from "./utils/arrayUtils";
 
 // Define the AppStateContext
 const AppStateContext = createContext<AppStateContextProps>(
@@ -73,6 +77,13 @@ type Action =
   | {
       type: "ADD_TASK";
       payload: { text: string; listId: string };
+    }
+  | {
+      type: "MOVE LIST";
+      payload: {
+        dragIndex: number;
+        hoverIndex: number;
+      };
     };
 
 // Define appStateReducer
@@ -115,6 +126,13 @@ const appStateReducer = (state: AppState, action: Action): AppState => {
           updatedTargetList,
           targetListIndex
         ),
+      };
+    }
+    case "MOVE LIST": {
+      const { dragIndex, hoverIndex } = action.payload;
+      return {
+        ...state,
+        lists: moveItem(state.lists, dragIndex, hoverIndex),
       };
     }
 
