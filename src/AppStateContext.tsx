@@ -5,6 +5,7 @@ import {
   overrideItemAtIndex,
   moveItem,
 } from "./utils/arrayUtils";
+// import { DragItem } from "./DragItem"
 
 // Define the AppStateContext
 const AppStateContext = createContext<AppStateContextProps>(
@@ -29,7 +30,8 @@ interface List {
 }
 
 export interface AppState {
-  lists: List[];
+  lists: List[]
+  draggedItem: DragItem | undefined
 }
 
 const appData: AppState = {
@@ -84,7 +86,11 @@ type Action =
         dragIndex: number;
         hoverIndex: number;
       };
-    };
+    }
+  | {
+      type: "SET_DRAGGED_ITEM"
+      Payload: DragItem | undefined
+    }
 
 // Define appStateReducer
 const appStateReducer = (state: AppState, action: Action): AppState => {
@@ -134,6 +140,10 @@ const appStateReducer = (state: AppState, action: Action): AppState => {
         ...state,
         lists: moveItem(state.lists, dragIndex, hoverIndex),
       };
+    }
+
+    case "SET_DRAGGED_ITEM": {
+      return { ...state, draggedItem: action.Payload}
     }
 
     default: {
